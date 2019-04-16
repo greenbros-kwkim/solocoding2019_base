@@ -1,30 +1,64 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() => runApp(MyApp());
 
-// This widget is the root of your application.
-class MyApp extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => new MyAppState();
-}
-
-class MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // set material design app
     return MaterialApp(
-      title: 'solocoding2019', // application name
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      title: 'Flutter Google Maps Demo',
+      home: MapSample(),
+    );
+  }
+}
+
+class MapSample extends StatefulWidget {
+  @override
+  State<MapSample> createState() => MapSampleState();
+}
+
+class MapSampleState extends State<MapSample> {
+  Completer<GoogleMapController> _controller = Completer();
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static final CameraPosition _kLake = CameraPosition(
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414);
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      body: GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: _kGooglePlex,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Flutter Demo'), // app bar title
-        ),
-        body: Center(
-          child: Text('Hello, world'), // center text
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _findMyLocation,
+        tooltip: "find location",
+        child: Icon(Icons.my_location),
       ),
     );
+  }
+
+  Future<void> _findMyLocation() async {
+    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    CameraPosition _myLocation = CameraPosition(
+        target: LatLng(position.latitude, position.longitude),
+        tilt: 59.440717697143555,
+        zoom: 19.151926040649414);
+
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myLocation));
   }
 }
