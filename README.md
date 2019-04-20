@@ -1,6 +1,10 @@
 # solocoding2019_base
 Base Project for solocoding
 
+2019/04/16  
+1. google map flutter 지도 표시
+2. 원하는 위치 마커 표시
+
 # 주제
 위치기반 앱
 원하는 아이템을 선정하여 하나 이상의 주제로 검색이 가능해야 한다.(맛집, 꽃집, 병원 등)
